@@ -1,0 +1,10 @@
+game -- rocket starts by taking off on the moon to fly from one level to the next
+
+- there are deadly metors and other such obstacles
+- as the levels progress, the harder it becomes
+- there is falling (tbd fuel) you must collect
+    - fuel Bar for the rocket
+        - the less fuel, the slower it goes until it falls out of the screen
+- the rocket moves by the flame boost (if no boost, it falls gradually)
+- in the backround there is the level counter like the score counter in 'buckshot'
+- when you reach a new highscore there is a line ingame showing that as you progress
