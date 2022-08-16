@@ -3,12 +3,12 @@ import pygame, random
 pygame.init()
 
 
-WIDTH = 400
-HEIGHT = 600
+WIDTH = 600
+HEIGHT = 800
 
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Blast Bounce")
+pygame.display.set_caption("Blast Point")
 
 
 clock = pygame.time.Clock()
@@ -20,34 +20,25 @@ GRAVITY = 0.7
 MAX_PLATFORMS = 10
 scroll = 0
 bg_scroll = 0
-game_over = False
-score = 0
 
 
 Grey = 240, 240, 240
 Dark_Grey = 100, 100, 100
 Light_Grey = 200, 200, 200
 Blue = 0, 144, 255
-bg_contrast = 18, 20, 38
 
-font_small = pygame.font.SysFont('data/fonts/VCR_OSD_MONO_1.001.ttf', 20)
-font_big = pygame.font.SysFont('data/fonts/VCR_OSD_MONO_1.001.ttf', 24)
-font_large = pygame.font.SysFont('data/fonts/VCR_OSD_MONO_1.001.ttf', 48)
 
 logo = pygame.image.load('data/images/logo.png')
 pygame.display.set_icon(logo)
 
 bg_image = pygame.image.load('data/images/bg.png').convert_alpha()
 rocketship = pygame.image.load('data/images/Rocketship.png').convert_alpha()
-ufo = pygame.image.load('data/images/ufo.png').convert_alpha()
+moon = pygame.image.load('data/images/moon.png').convert_alpha()
 
-def draw_text(text, font, text_col, x, y):
-    img =  font.render(text, True, text_col)
-    screen.blit(img, (x, y))
 
 def draw_bg(bg_scroll):
 	screen.blit(bg_image, (0, 0 + bg_scroll))
-	screen.blit(bg_image, (0, -600 + bg_scroll))
+	screen.blit(bg_image, (0, -800 + bg_scroll))
 
 class Rocketship():
     def __init__(self, x, y):
@@ -92,6 +83,10 @@ class Rocketship():
                         dy = 0
                         self.vel_y = -20
 
+        if self.rect.bottom + dy > HEIGHT:
+            dy = 0
+            self.vel_y = -20
+
         if self.rect.top <= SCROLL_THRESH:
             if self.vel_y < 0:
                 scroll = -dy
@@ -107,68 +102,41 @@ class Rocketship():
 class Platform(pygame.sprite.Sprite):
 	def __init__(self, x, y, width ):
 		pygame.sprite.Sprite.__init__(self)
-		self.image = pygame.transform.scale(ufo, (75, 75))
-		self.rect = self.image.get_rect()
-		self.rect.x = x
-		self.rect.y = y
+		self.image = pygame.transform.scale(moon, (400, 400))
+		self.width = 200
+		self.height = 200
+		self.rect = pygame.Rect(0, 0, self.width, self.height)
+		self.rect.center = (x, y)
+        
 
 	def update(self, scroll):
             self.rect.y += scroll
-            
-            if self.rect.top > HEIGHT:
-                self.kill()
-
 
 
 rocketship = Rocketship(WIDTH // 2, HEIGHT - 150) 
 
 platform_group = pygame.sprite.Group()
 
-platform = Platform(WIDTH // 2 - 50, HEIGHT - 150, 75)
-platform_group.add(platform)
-
 run = True
 while run:
 
     clock.tick(FPS)
 
-    if game_over == False:
-        scroll = rocketship.move()
+    scroll = rocketship.move()
 
-        bg_scroll += scroll
-        if bg_scroll >= 600:
-            bg_scroll = 0
-        draw_bg(bg_scroll)
+    bg_scroll += scroll
+    if bg_scroll >= 600:
+        bg_scroll = 0
+    draw_bg(bg_scroll)
 
-        if len(platform_group) < MAX_PLATFORMS:
-            p_w = random.randint(75, 75)
-            p_x = random.randint(0, WIDTH - p_w)
-            p_y = platform.rect.y - random.randint(165, 165)
-            platform = Platform(p_x, p_y, p_w)
-            platform_group.add(platform)
+    if len(platform_group) < MAX_PLATFORMS:
+        platform = Platform(WIDTH // 2 - 100, HEIGHT - 50, 400)
+        platform_group.add(platform)
 
-        platform_group.update(scroll)
+    platform_group.update(scroll)
 
-        platform_group.draw(screen)
-        rocketship.draw()
-
-        
-        if rocketship.rect.top > HEIGHT:
-            game_over = True
-    else:
-        draw_text('GAME OVER!', font_large, Blue, 100, 200)
-        draw_text('SCORE: '+ str(score), font_big, Light_Grey, 160, 250)
-        draw_text('PRESS SPACE TO RESTART', font_big, Light_Grey, 80, 300)
-        key = pygame.key.get_pressed()
-        if key[pygame.K_SPACE]:
-            game_over = False
-            score = 0
-            scroll = 0
-            rocketship.rect.center = (WIDTH // 2, HEIGHT - 150)
-            platform_group.empty()
-            platform = Platform(WIDTH // 2 - 50, HEIGHT - 150, 75)
-            platform_group.add(platform)
-
+    platform_group.draw(screen)
+    rocketship.draw()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

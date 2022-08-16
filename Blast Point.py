@@ -18,6 +18,7 @@ FPS = 60
 SCROLL_THRESH = 200
 scroll = 0
 GRAVITY = 1
+bg_scroll = 0
 
 
 Grey = 240, 240, 240
@@ -37,6 +38,10 @@ moon = pygame.image.load('data/images/moon.png').convert_alpha()
 
 moon = pygame.transform.scale(moon, (400,400))
 
+
+def draw_bg(bg_scroll):
+	screen.blit(bg_image, (0, 0 + bg_scroll))
+	screen.blit(bg_image, (0, -600 + bg_scroll))
 
 class Rocketship():
     def __init__(self, x, y):
